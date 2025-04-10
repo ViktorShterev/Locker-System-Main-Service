@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Login | SmartLockerHub</title>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            background-color: #f7f4f2;
+        }
+
+        .header {
+            background-color: #d62828;
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 3rem auto;
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            color: #d62828;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 0.5rem;
+        }
+
+        button {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: #d62828;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #b91d1d;
+        }
+
+        .link {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .link a {
+            color: #d62828;
+            text-decoration: none;
+        }
+
+        footer {
+            margin-top: 3rem;
+            text-align: center;
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>SmartLockerHub</h1>
+</div>
+
+<div class="container">
+    <h2>Login</h2>
+
+    <form th:action="@{/login}" method="post">
+
+        <input type="email"
+               name="email"
+               th:value="${email}"
+               placeholder="Email" />
+        <input type="password" min="4" max="30"
+               name="password"
+               placeholder="Password" />
+
+        <p th:if="${bad_credentials}" class="errors alert alert-danger" th:text="'Invalid email or password!'">
+            Invalid email or password!
+        </p>
+
+        <button type="submit">Login</button>
+    </form>
+    <div class="link">
+        Don't have an account? <a th:href="@{/register}">Register</a>
+    </div>
+</div>
+
+<footer>
+    &copy; 2025 SmartLockerHub. All rights reserved.
+</footer>
+
+</body>
+</html>
