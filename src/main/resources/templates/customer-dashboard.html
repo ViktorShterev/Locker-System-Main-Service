@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Customer Dashboard | SmartLockerHub</title>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            background-color: #f7f4f2;
+        }
+
+        .header {
+            background-color: #d62828;
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            color: #d62828;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .empty {
+            text-align: center;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>SmartLockerHub</h1>
+    <p>Welcome, Customer</p>
+</div>
+
+<div class="container">
+    <h2>Your Parcels</h2>
+
+    <div th:if="${parcels.isEmpty()}" class="empty">No parcels found</div>
+
+    <table th:if="${!parcels.isEmpty()}">
+        <thead>
+        <tr>
+            <th>Tracking ID</th>
+            <th>Status</th>
+            <th>Locker</th>
+            <th>Pickup Code</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="parcel : ${parcels}">
+            <td th:text="${parcel.trackingId}">#123</td>
+            <td th:text="${parcel.status}">Delivered</td>
+            <td th:text="${parcel.lockerCode}">L-22</td>
+            <td th:text="${parcel.pickupCode}">ABCD1234</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>
