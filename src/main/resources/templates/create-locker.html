@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Create Locker | SmartLockerHub</title>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            background-color: #f7f4f2;
+        }
+
+        .header {
+            background-color: #d62828;
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 3rem auto;
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            color: #d62828;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 0.5rem;
+        }
+
+        button {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: #d62828;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #b91d1d;
+        }
+
+        footer {
+            margin-top: 3rem;
+            text-align: center;
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>SmartLockerHub</h1>
+</div>
+
+<div class="container">
+    <h2>Create Locker Location</h2>
+
+    <form th:action="@{/admin/lockers/create}" th:object="${createLockerDTO}" method="post">
+
+        <div>
+            <label for="location">Location</label>
+            <input type="text" min="4" max="60"
+                   id="location"
+                   th:field="*{location}"
+                   placeholder="Enter location name"/>
+
+            <p th:if="${#fields.hasErrors('location')}"
+               th:errors="*{location}"
+               class="errors alert alert-danger">
+                Location is required.
+        </div>
+
+
+        <label for="smallUnits">Small Locker Units</label>
+        <select th:field="*{smallUnits}"
+            id="smallUnits">
+            <option th:each="i : ${#numbers.sequence(4,30)}"
+                    th:value="${i}"
+                    th:text="${i}"></option>
+        </select>
+
+        <label for="mediumUnits">Medium Locker Units</label>
+        <select th:field="*{mediumUnits}"
+            id="mediumUnits">
+            <option th:each="i : ${#numbers.sequence(4,30)}"
+                    th:value="${i}"
+                    th:text="${i}"></option>
+        </select>
+
+        <label for="largeUnits">Large Locker Units</label>
+        <select th:field="*{largeUnits}"
+            id="largeUnits">
+            <option th:each="i : ${#numbers.sequence(4,30)}"
+                    th:value="${i}"
+                    th:text="${i}"></option>
+        </select>
+
+        <button type="submit">Create Locker</button>
+    </form>
+</div>
+
+<footer>
+    &copy; 2025 SmartLockerHub. All rights reserved.
+</footer>
+
+</body>
+</html>
