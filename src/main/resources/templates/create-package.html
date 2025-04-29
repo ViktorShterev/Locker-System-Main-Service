@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Place Package | SmartLockerHub</title>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            background-color: #f7f4f2;
+        }
+
+        .header {
+            background-color: #d62828;
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 3rem auto;
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            color: #d62828;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        select, input, textarea {
+            width: 100%;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 0.5rem;
+        }
+
+        button {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: #d62828;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #b91d1d;
+        }
+
+        .info-box {
+            background-color: #f1f1f1;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        footer {
+            margin-top: 3rem;
+            text-align: center;
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>SmartLockerHub</h1>
+</div>
+
+<div class="container">
+    <h2>Place a Package</h2>
+
+    <form id="packageForm" th:action="@{/create-package}" method="post">
+        <label for="location">Locker Location</label>
+        <select id="location" name="lockerLocation" required onchange="checkAvailability()">
+            <option value="" disabled selected>-- Select Location --</option>
+            <option th:each="location : ${locations}"
+                    th:value="${location}"
+                    th:text="${location}"></option>
+        </select>
+
+        <div id="availabilityResult" class="info-box"></div>
+
+        <label for="lockerSize">Locker Size</label>
+        <select id="lockerSize" name="lockerSize" required onchange="loadAvailableUnits()">
+            <option value="" disabled selected>-- Select Size --</option>
+        </select>
+
+        <label for="lockerUnitId">Locker Unit</label>
+        <select id="lockerUnitId" name="lockerUnitId" required>
+            <option value="" disabled selected>-- Select Unit --</option>
+        </select>
+
+        <label for="recipientEmail">Recipient Email</label>
+        <input id="recipientEmail" type="email" name="recipientEmail" placeholder="e.g. customer@mail.com" required />
+
+        <label for="description">Package Description</label>
+        <textarea id="description" name="description" placeholder="Optional..." rows="3"></textarea>
+
+        <button type="submit">Submit Package</button>
+    </form>
+</div>
+
+<footer>
+    &copy; 2025 SmartLockerHub. All rights reserved.
+</footer>
+
+<script>
+    let availabilityData = {}; // Will store fetched data for size filtering
+
+    async function checkAvailability() {
+        const location = document.getElementById("location").value;
+        const sizeSelect = document.getElementById("lockerSize");
+        const unitSelect = document.getElementById("lockerUnitId");
+        const resultBox = document.getElementById("availabilityResult");
+
+        sizeSelect.innerHTML = `<option value="" disabled selected>-- Select Size --</option>`;
+        unitSelect.innerHTML = `<option value="" disabled selected>-- Select Unit --</option>`;
+        resultBox.innerHTML = `<p>Checking availability...</p>`;
+
+        try {
+            const response = await fetch(`/lockers/availability?location=${encodeURIComponent(location)}`);
+            if (!response.ok) throw new Error("Network error");
+
+            const data = await response.json();
+            availabilityData = data; // Cache for later use
+
+            let html = "";
+            const sizes = ["SMALL", "MEDIUM", "LARGE"];
+
+            const isAllEmpty = sizes.every(size => !data[size] || data[size].count === 0);
+
+            if (isAllEmpty) {
+                html = `<p style="color:red;">This location is currently full. Please choose another.</p>`;
+            } else {
+                html += `<p><strong>Available Units:</strong></p><ul>`;
+                sizes.forEach(size => {
+                    if (data[size]?.count > 0) {
+                        html += `<li>${size.charAt(0) + size.slice(1).toLowerCase()}: ${data[size].count}</li>`;
+                        sizeSelect.innerHTML += `<option value="${size}">${size.charAt(0) + size.slice(1).toLowerCase()}</option>`;
+                    }
+                });
+                html += `</ul>`;
+            }
+
+            resultBox.innerHTML = html;
+
+        } catch (err) {
+            console.error(err);
+            resultBox.innerHTML = `<p style="color:red;">Failed to load availability.</p>`;
+        }
+    }
+
+    function loadAvailableUnits() {
+        const selectedSize = document.getElementById("lockerSize").value;
+        const unitSelect = document.getElementById("lockerUnitId");
+
+        unitSelect.innerHTML = `<option value="" disabled selected>Loading units...</option>`;
+
+        const unitData = availabilityData[selectedSize];
+        if (unitData && unitData.unitIds.length > 0) {
+            unitSelect.innerHTML = `<option value="" disabled selected>-- Select Unit --</option>`;
+            unitData.unitIds.forEach(id => {
+                unitSelect.innerHTML += `<option value="${id}">Unit #${id}</option>`;
+            });
+        } else {
+            unitSelect.innerHTML = `<option value="" disabled selected>No available units</option>`;
+        }
+    }
+</script>
+
+</body>
+</html>
