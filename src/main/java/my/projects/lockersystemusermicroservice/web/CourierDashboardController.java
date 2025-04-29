@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
-public class CourierDashboard {
+public class CourierDashboardController {
 
     @GetMapping("/courier-dashboard")
     public ModelAndView courierDashboard() {
