@@ -2,6 +2,11 @@ package my.projects.lockersystemusermicroservice.entity;
 
 import jakarta.persistence.*;
 import my.projects.lockersystemusermicroservice.enums.Role;
+import org.hibernate.annotations.JdbcTypeCode;
+
+import java.sql.Types;
+import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @Table(name = "users")
@@ -10,6 +15,9 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(unique = true, nullable = false)
+    private UUID uuid;
 
     @Column(nullable = false, name = "full_name")
     private String fullName;
@@ -23,6 +31,9 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
+
+    @OneToMany(mappedBy = "user")
+    private Set<AccessCode> accessCodes;
 
     public User() {
     }
@@ -40,6 +51,14 @@ public class User {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
     }
 
     public String getFullName() {
