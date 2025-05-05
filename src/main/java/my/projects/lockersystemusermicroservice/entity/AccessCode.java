@@ -3,8 +3,6 @@ package my.projects.lockersystemusermicroservice.entity;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
-import java.util.random.RandomGenerator;
 
 @Entity
 @Table(name = "access_code")
@@ -17,9 +15,9 @@ public class AccessCode {
     private String code;
 
     @Column(nullable = false, unique = true, name = "package_id")
-    private String packageId;
+    private Long packageId;
 
-    @Column(nullable = false, name = "expires_at")
+    @Column(name = "expires_at")
     private LocalDateTime expiresAt;
 
     private boolean used;
@@ -28,9 +26,6 @@ public class AccessCode {
     private User user;
 
     public AccessCode() {
-        this.expiresAt = LocalDateTime.now();
-        this.code = RandomGenerator.getDefault().toString();
-        this.packageId = UUID.randomUUID().toString();
     }
 
     public Long getId() {
@@ -41,7 +36,7 @@ public class AccessCode {
         return code;
     }
 
-    public String getPackageId() {
+    public Long getPackageId() {
         return packageId;
     }
 
@@ -59,5 +54,25 @@ public class AccessCode {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public void setPackageId(Long packageId) {
+        this.packageId = packageId;
+    }
+
+    public void setExpiresAt(LocalDateTime expiresAt) {
+        this.expiresAt = expiresAt;
+    }
+
+    public void setUsed(boolean used) {
+        this.used = used;
     }
 }
