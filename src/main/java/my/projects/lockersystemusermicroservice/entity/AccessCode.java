@@ -14,7 +14,7 @@ public class AccessCode {
     @Column(unique = true, nullable = false)
     private String code;
 
-    @Column(nullable = false, unique = true, name = "package_id")
+    @Column(nullable = false, name = "package_id")
     private Long packageId;
 
     @Column(name = "expires_at")

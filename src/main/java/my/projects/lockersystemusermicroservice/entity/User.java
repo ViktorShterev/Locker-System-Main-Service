@@ -38,11 +38,12 @@ public class User {
     public User() {
     }
 
-    public User(String fullName, String email, String password, Role role) {
+    public User(String fullName, String email, String password, Role role, UUID uuid) {
         this.fullName = fullName;
         this.email = email;
         this.password = password;
         this.role = role;
+        this.uuid = uuid;
     }
 
     public Long getId() {
