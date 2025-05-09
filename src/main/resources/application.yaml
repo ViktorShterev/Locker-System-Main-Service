@@ -58,13 +58,15 @@ spring:
     username: ${SMTP_EMAIL}
     password: ${SMTP_PASSWORD}
     protocol: smtp
-    tls: true
     properties:
       mail:
         smtp:
           auth: true
           starttls:
             enable: true
+            required: true
+          ssl:
+            trust: smtp.gmail.com
 
 logging:
   level:

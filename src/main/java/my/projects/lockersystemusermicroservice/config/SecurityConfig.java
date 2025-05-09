@@ -1,11 +1,11 @@
 package my.projects.lockersystemusermicroservice.config;
 
+import my.projects.lockersystemusermicroservice.enums.Role;
 import my.projects.lockersystemusermicroservice.repository.UserRepository;
 import my.projects.lockersystemusermicroservice.service.impl.UserDetailsServiceImpl;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -20,14 +20,21 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 
-        return httpSecurity.authorizeHttpRequests(
+        return httpSecurity
+                .authorizeHttpRequests(
 //                Define which urls are visible to which users
                 authorizeRequests -> authorizeRequests
 //                        All static resources which are situated in js, images, css are visible to anyone
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
 //                        Allow anyone to see the home, login and register form and page
                         .requestMatchers("/", "/login", "/register", "/login-error").permitAll()
-                        .requestMatchers("/customer-dashboard").permitAll()
+                        .requestMatchers("/customer/**").hasRole(Role.CUSTOMER.name())
+                        .requestMatchers("/admin/dashboard").hasRole(Role.ADMIN.name())
+                        .requestMatchers("/lockers/create-locker").hasRole(Role.ADMIN.name())
+                        .requestMatchers("/lockers/availability").hasRole(Role.COURIER.name())
+                        .requestMatchers("/lockers/locations").hasRole(Role.COURIER.name())
+                        .requestMatchers("/packages/create-package").hasRole(Role.COURIER.name())
+                        .requestMatchers("/packages/receive-package").hasRole(Role.CUSTOMER.name())
 //                        All other requests are authenticated
                         .anyRequest().authenticated()
 
@@ -40,7 +47,7 @@ public class SecurityConfig {
 //                            The names of the input fields (in our case auth-login.html)
                                 .usernameParameter("email")
                                 .passwordParameter("password")
-                                .defaultSuccessUrl("/customer-dashboard")
+                                .successHandler(new CustomAuthenticationSuccessHandler())
                                 .failureForwardUrl("/login-error")
 
         ).logout(
