@@ -1,25 +1,30 @@
 package my.projects.lockersystemusermicroservice.dto.restDto;
 
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 public class CreateLockerDTO {
 
-    @NotEmpty(message = "")
+    @NotBlank(message = "")
     @Size(min = 4, max = 60, message = "Location name must be between 4 and 60 symbols!")
     private String location;
 
-    @NotEmpty(message = "")
-    @Size(min = 4, max = 30, message = "Units size should be between 4 and 30!")
+    @NotNull(message = "Units size should be between 4 and 30!")
+    @Min(value = 4, message = "")
+    @Max(value = 30, message = "")
     private int smallUnits;
 
-    @NotEmpty(message = "")
-    @Size(min = 4, max = 30, message = "Units size should be between 4 and 30!")
+    @NotNull(message = "Units size should be between 4 and 30!")
+    @Min(value = 4, message = "")
+    @Max(value = 30, message = "")
     private int mediumUnits;
 
-    @NotEmpty(message = "")
-    @Size(min = 4, max = 30, message = "Units size should be between 4 and 30!")
+    @NotNull(message = "Units size should be between 4 and 30!")
+    @Min(value = 4, message = "")
+    @Max(value = 30, message = "")
     private int largeUnits;
+
+    public CreateLockerDTO() {
+    }
 
     public CreateLockerDTO(String location, int smallUnits, int mediumUnits, int largeUnits) {
         this.location = location;

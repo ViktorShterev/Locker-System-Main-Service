@@ -2,6 +2,8 @@ package my.projects.lockersystemusermicroservice.web.restControllers;
 
 import jakarta.validation.Valid;
 import my.projects.lockersystemusermicroservice.dto.restDto.CreateLockerDTO;
+import my.projects.lockersystemusermicroservice.dto.restDto.LockerLocationDTO;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -15,17 +17,18 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 @Controller
+@RequestMapping("/lockers")
 public class LockerController {
 
     private final RestClient restClient;
 
-    public LockerController(RestClient restClient) {
+    public LockerController(@Qualifier("lockerRestClient") RestClient restClient) {
         this.restClient = restClient;
     }
 
     @GetMapping("/create-locker")
-    public ModelAndView showCreateLockerForm(@ModelAttribute("createLockerDTO") CreateLockerDTO createLockerDTO) {
-        return new ModelAndView("create-locker");
+    public ModelAndView showCreateLockerForm() {
+        return new ModelAndView("create-locker", "createLockerDTO", new CreateLockerDTO());
     }
 
     @PostMapping("/create-locker")
@@ -40,18 +43,31 @@ public class LockerController {
             return modelAndView;
         }
 
-        this.restClient
+        Boolean success = this.restClient
                 .post()
-                .uri("http://localhost:8081/create-locker")
+                .uri("http://localhost:8081/lockers/create-locker")
                 .body(createLockerDTO)
-                .retrieve();
+                .retrieve()
+                .body(Boolean.class);
 
-        modelAndView.setViewName("redirect:/admin-dashboard");
+        if (Boolean.TRUE.equals(success)) {
+            modelAndView.setViewName("redirect:/admin/dashboard");
+
+        } else {
+            modelAndView.setViewName("error-rest");
+        }
         return modelAndView;
     }
 
-    @GetMapping("/locker/availability")
-    @ResponseBody
+    @GetMapping("/locations")
+    public ResponseEntity<LockerLocationDTO> getLockersLocations() {
+        return this.restClient.get()
+                .uri("http://localhost:8081/lockers/locations")
+                .retrieve()
+                .toEntity(new ParameterizedTypeReference<>() {});
+    }
+
+    @GetMapping("/availability")
     public ResponseEntity<Map<String, Integer>> getAvailableLockers(@RequestParam String location) {
         // Forward the request to the locker microservice
         return this.restClient.get()
