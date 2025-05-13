@@ -83,13 +83,13 @@
 <div class="container">
     <h2>Place a Package</h2>
 
-    <form id="packageForm" th:action="@{/create-package}" method="post">
+    <form id="packageForm" th:action="@{/packages/create-package}" method="post">
         <label for="location">Locker Location</label>
         <select id="location" name="lockerLocation" required onchange="checkAvailability()">
             <option value="" disabled selected>-- Select Location --</option>
             <option th:each="location : ${locations}"
-                    th:value="${location}"
-                    th:text="${location}"></option>
+                    th:value="${location.getLocation()}"
+                    th:text="${location.getLocation()}"></option>
         </select>
 
         <div id="availabilityResult" class="info-box"></div>
@@ -132,27 +132,53 @@
         resultBox.innerHTML = `<p>Checking availability...</p>`;
 
         try {
-            const response = await fetch(`/lockers/availability?location=${encodeURIComponent(location)}`);
+            const token = 'WSdv1kEE1tCT1a8ihRSqfwMNzlPBq8IWSdv1kEE1tCT1a8ihRSqfwMNzlPBq8IWSdv1kEE1tCT1a8ihRSqfwMNzlPBq8I'; // or sessionStorage
+
+            const response = await fetch(`http://localhost:8081/lockers/availability?location=${encodeURIComponent(location)}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
             if (!response.ok) throw new Error("Network error");
 
             const data = await response.json();
-            availabilityData = data; // Cache for later use
+            availabilityData = data; // Cache
+
+            console.log("Received availability data:", data);
 
             let html = "";
             const sizes = ["SMALL", "MEDIUM", "LARGE"];
 
-            const isAllEmpty = sizes.every(size => !data[size] || data[size].count === 0);
+// Check if there's at least one available unit
+            const hasAvailableUnits = sizes.some(size => {
+                const lockerData = data[size];  // Get the data for the current size
+                console.log(`Checking ${size}:`, lockerData);
 
-            if (isAllEmpty) {
-                html = `<p style="color:red;">This location is currently full. Please choose another.</p>`;
+                return lockerData && lockerData.count > 0;  // Returns true if there's available units for that size
+            });
+
+            if (!hasAvailableUnits) {
+                // If no units are available, show that the location is full
+                html = `<p style="color:red;">This location is currently full. Please choose another location.</p>`;
             } else {
+                // If there are available units, show the available locker sizes and units
                 html += `<p><strong>Available Units:</strong></p><ul>`;
+
+                // Loop through the sizes and check for available units
                 sizes.forEach(size => {
-                    if (data[size]?.count > 0) {
-                        html += `<li>${size.charAt(0) + size.slice(1).toLowerCase()}: ${data[size].count}</li>`;
+                    const lockerData = data[size]; // Get the data for the current size
+                    console.log(`Checking ${size} availability:`, lockerData);
+
+                    // If the count for the current size is greater than 0, display it
+                    if (lockerData && lockerData.count > 0) {
+                        html += `<li>${size.charAt(0) + size.slice(1).toLowerCase()}: ${lockerData.count}</li>`;
+
+                        // Populate the size dropdown with available sizes
                         sizeSelect.innerHTML += `<option value="${size}">${size.charAt(0) + size.slice(1).toLowerCase()}</option>`;
                     }
                 });
+
                 html += `</ul>`;
             }
 
