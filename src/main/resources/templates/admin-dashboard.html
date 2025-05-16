@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Admin Dashboard | SmartLockerHub</title>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            background-color: #f7f4f2;
+        }
+
+        .header {
+            background-color: #d62828;
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 4rem auto;
+            background-color: white;
+            padding: 3rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        h2 {
+            color: #d62828;
+            margin-bottom: 2rem;
+        }
+
+        .btn {
+            background-color: #d62828;
+            color: white;
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin: 1rem;
+        }
+
+        .btn:hover {
+            background-color: #b91d1d;
+        }
+
+        footer {
+            margin-top: 3rem;
+            text-align: center;
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>SmartLockerHub</h1>
+</div>
+
+<div class="container">
+    <h2>Welcome, Admin!</h2>
+    <a class="btn" th:href="@{/lockers/create-locker}">Create New Locker</a>
+    <a class="btn" th:href="@{/admin/maintenance}">Set Locker Under Maintenance</a>
+</div>
+
+<footer>
+    &copy; 2025 SmartLockerHub. All rights reserved.
+</footer>
+
+</body>
+</html>

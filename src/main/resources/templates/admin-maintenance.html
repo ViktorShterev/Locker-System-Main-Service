@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Locker Maintenance | SmartLockerHub</title>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            background-color: #f7f4f2;
+        }
+
+        .header {
+            background-color: #d62828;
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 4rem auto;
+            background-color: white;
+            padding: 2.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            color: #d62828;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        label {
+            display: block;
+            margin-top: 1rem;
+            font-weight: bold;
+        }
+
+        select, button {
+            width: 100%;
+            padding: 0.75rem;
+            margin-top: 0.5rem;
+            border-radius: 0.5rem;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            background-color: #d62828;
+            color: white;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 2rem;
+        }
+
+        button:hover {
+            background-color: #b91d1d;
+        }
+
+        .message {
+            margin-top: 1rem;
+            text-align: center;
+            color: green;
+            font-weight: bold;
+        }
+
+        footer {
+            margin-top: 3rem;
+            text-align: center;
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+    </style>
+
+    <script>
+        function fetchUnits() {
+            const location = document.getElementById("location").value;
+            const size = document.getElementById("size").value;
+
+            if (!location || !size) return;
+
+            fetch(`/admin/available-units?location=${location}&size=${size}`)
+                .then(response => response.json())
+                .then(data => {
+                    const unitSelect = document.getElementById("unitNumber");
+                    unitSelect.innerHTML = "";
+
+                    if (data.length === 0) {
+                        unitSelect.innerHTML = `<option value="" disabled selected>No available units</option>`;
+                    } else {
+                        unitSelect.innerHTML = `<option value="" disabled selected>-- Select Unit --</option>`;
+                        data.forEach(num => {
+                            const opt = document.createElement("option");
+                            opt.value = num;
+                            opt.text = `Unit #${num}`;
+                            unitSelect.appendChild(opt);
+                        });
+                    }
+                });
+        }
+    </script>
+</head>
+<body>
+
+<div class="header">
+    <h1>SmartLockerHub</h1>
+</div>
+
+<div class="container">
+    <h2>Locker Maintenance</h2>
+
+    <form th:action="@{/admin/set-maintenance}" method="post">
+        <label for="location">Locker Location</label>
+        <select id="location" name="location" required onchange="fetchUnits()">
+            <option value="" disabled selected>-- Select Location --</option>
+            <option th:each="loc : ${locations}" th:value="${loc}" th:text="${loc}"></option>
+        </select>
+
+        <label for="size">Locker Size</label>
+        <select id="size" name="size" required onchange="fetchUnits()">
+            <option value="" disabled selected>-- Select Size --</option>
+            <option value="SMALL">Small</option>
+            <option value="MEDIUM">Medium</option>
+            <option value="LARGE">Large</option>
+        </select>
+
+        <label for="unitNumber">Unit Number</label>
+        <select id="unitNumber" name="unitNumber" required>
+            <option value="" disabled selected>-- Select Unit --</option>
+            <!-- Options populated by JavaScript -->
+        </select>
+
+        <button type="submit">Set Under Maintenance</button>
+    </form>
+</div>
+
+<footer>
+    &copy; 2025 SmartLockerHub. All rights reserved.
+</footer>
+
+</body>
+</html>
